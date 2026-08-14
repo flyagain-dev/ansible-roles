@@ -1,8 +1,8 @@
 #SPDX-License-Identifier: MIT-0
 ---
-- name: set timezone to Europe/Moscow
-  timezone:
-    name: Europe/Moscow
+- name: set timezone
+  ansible.builtin.timezone:
+    name: "{{ timezone }}"
 
 - name: set a hostname
   ansible.builtin.hostname:
@@ -10,29 +10,29 @@
 
 - block:
     - name: create a swap file
-      shell: fallocate -l {{ swap_size }} /swapfile
+      shell: fallocate -l {{ swap_size }} {{ swapfile }}
       args:
-        creates: /swapfile
+        creates: "{{ swapfile }}"
 
     - name: set the correct permissions
       file:
-        path: /swapfile
+        path: "{{ swapfile }}"
         owner: root
         group: root
         mode: '0600'
 
     - name: make the file a swap file
-      shell: mkswap /swapfile
+      shell: mkswap {{ swapfile }}
       when: ansible_facts.swapfree_mb == 0
 
     - name: enable the swap file
-      shell: swapon /swapfile
+      shell: swapon {{ swapfile }}
       when: ansible_facts.swapfree_mb == 0
 
     - name: add swap file to fstab
       mount:
         name: none
-        src: /swapfile
+        src: "{{ swapfile }}"
         fstype: swap
         opts: sw
         passno: 0

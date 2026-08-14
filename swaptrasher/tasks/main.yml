@@ -1,0 +1,22 @@
+#SPDX-License-Identifier: MIT-0
+---
+- block:
+  - name: check if swap in enabled
+    shell: swapon --show --noheadings
+    register: swap_status
+    changed_when: false
+
+  - name: disable swap
+    command: "swapoff {{ swapfile }}"
+    when: swapfile in swap_status.stdout
+  
+  - name: remove swapfile from fstab
+    lineinfile:
+      path: /etc/fstab
+      regexp: "^{{ swapfile | regex_escape }}\\s+"
+      state: absent
+
+  - name: remove swapfile
+    file:
+      path: "{{ swapfile }}"
+      state: absent
