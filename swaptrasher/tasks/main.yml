@@ -1,0 +1,22 @@
+#SPDX-License-Identifier: MIT-0
+---
+
+- name: check active swap
+  ansible.builtin.shell: swapon --show --noheadings
+  register: swap_status
+  changed_when: false
+
+- name: disable swap
+  ansible.builtin.shell: swapoff -a
+  when: swap_status.stdout | trim != ''
+
+- name: remove swapfile
+  ansible.builtin.file:
+    path: "{{ swap_file }}"
+    state: absent
+
+- name: remove swapfile from fstab
+  ansible.builtin.lineinfile:
+    path: /etc/fstab
+    regexp: '^\s*{{ swap_file | regex_escape }}\s+'
+    state: absent
