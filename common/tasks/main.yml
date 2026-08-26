@@ -1,6 +1,19 @@
 #SPDX-License-Identifier: MIT-0
 ---
 
+- name: update apt cache
+  apt:
+    update_cache: yes
+  become: yes
+
+- name: installation packages
+  apt:
+    name: "{{ item }}"
+    state: present
+  loop:
+   - "{{ packages }}"
+  become: yes
+
 - name: set timezone
   timezone:
     name: "{{ time_zone }}"
@@ -45,8 +58,3 @@
         dump: 0
         state: present
       become: yes
-
-- name: update apt cache
-  apt:
-    update_cache: yes
-  become: yes
