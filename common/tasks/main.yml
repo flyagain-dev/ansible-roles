@@ -1,9 +1,9 @@
 #SPDX-License-Identifier: MIT-0
 ---
 
-- name: set timezone to Europe/Moscow
+- name: set timezone
   timezone:
-    name: Europe/Moscow
+    name: "{{ time_zone }}"
 
 - name: set hostname
   ansible.builtin.hostname:
