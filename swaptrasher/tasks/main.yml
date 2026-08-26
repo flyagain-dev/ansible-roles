@@ -9,14 +9,17 @@
 - name: disable swap
   ansible.builtin.shell: swapoff -a
   when: swap_status.stdout | trim != ''
+  become: yes
 
 - name: remove swapfile
   ansible.builtin.file:
     path: "{{ swap_file }}"
     state: absent
+  become: yes
 
 - name: remove swapfile from fstab
   ansible.builtin.lineinfile:
     path: /etc/fstab
     regexp: '^\s*{{ swap_file | regex_escape }}\s+'
     state: absent
+  become: yes
